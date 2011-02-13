@@ -76,10 +76,8 @@ void setup()
   Serial.print(pressureSensor.getBasePressure());
   Serial.print(" ");
   printMessage(DONE_MESSAGE);
-#ifndef SHHHH
   Beeper::playTune(startupTune);
   Beeper::waitForTuneToEnd();
-#endif
   battery.setup();
 #ifdef BATTERY_LIPO
   printMessage(LIPO_CELLS_MESSAGE);

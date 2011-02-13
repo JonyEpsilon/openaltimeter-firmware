@@ -45,6 +45,7 @@ void Beeper::beep(uint16_t frequency, uint16_t duration)
 
 void Beeper::playTune(int16_t* tune)
 {
+#ifndef SHHHH
   _beeperTunePlaying = true;
   // store a reference to the tune
   _beeperTuneData = tune;
@@ -63,6 +64,7 @@ void Beeper::playTune(int16_t* tune)
   ICR1 = TUNE_BASE_PERIOD / (8 * 2);
   // enable the interrupt
   TIMSK1 = _BV(TOIE1);
+#endif
 }
 
 ISR(TIMER1_OVF_vect)
@@ -96,16 +98,20 @@ ISR(TIMER1_OVF_vect)
 
 void Beeper::stopTune()
 {
+#ifndef SHHHH
   // stop the sound and disable our interrupt.
   noTone(_beeperDigitalPin);
   TIMSK1 = 0;
   _beeperTunePlaying = false;
+#endif
 }
 
 void Beeper::waitForTuneToEnd()
 {
+#ifndef SHHHH
   while (_beeperTunePlaying) delay(10);
   delay(100);
+#endif
 }
 
 void Beeper::outputInteger(int integer)
