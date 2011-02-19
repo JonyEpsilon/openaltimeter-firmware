@@ -53,6 +53,7 @@
 #define FAKING_FLIGHT_MESSAGE 26
 #define FLASH_FULL_MESSAGE 27
 #define TEST_FAIL_MESSAGE 28
+#define DATA_FORMAT_MESSAGE 29
 
 void printMessage(int messageIndex);
 

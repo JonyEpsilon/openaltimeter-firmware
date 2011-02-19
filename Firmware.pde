@@ -63,7 +63,7 @@ void setup()
   printMessage(WELCOME_MESSAGE);
   Serial.print("Build: ");
   Serial.println(__TIMESTAMP__);
-  Serial.println(DATASTORE_LOG_ENTRY_SIZE);
+  printMessage(DATA_FORMAT_MESSAGE);
   Spi.setup();
   pressureSensor.setup();
   radio.setup();
