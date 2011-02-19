@@ -170,9 +170,11 @@ void log()
   if (logging)
   {
     LogEntry le;
-    le.pressure = pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE);
-    le.temperature = pressureSensor.temperature;
-    le.battery = battery.readVoltage();
+    le.setPressure( pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE) );
+    le.setTemperature( pressureSensor.temperature );
+    le.setBattery( battery.readVoltage() );
+    //TODO: servo logging
+    le.setServo(0);
     if (datastore.addEntry(&le))
       Serial.print(".");
     else
@@ -268,7 +270,7 @@ void outputMaxHeight()
   {
     LogEntry le;
     datastore.getPreviousEntry(&le);
-    int32_t alt = pressureSensor.convertToAltitude(le.pressure);
+    int32_t alt = pressureSensor.convertToAltitude(le.getPressure());
     if (alt > highestAltitude) highestAltitude = alt;
     if (lastHeight - alt > LAUNCH_CLIMB_THRESHOLD) launchingFor++;
     else launchingFor = 0;
@@ -285,8 +287,8 @@ void outputMaxHeight()
       datastore.getPreviousEntry(&le);
       // we stop if we encounter a file boundary.
       // unlikely to happen, but worth checking for.
-      if (le.pressure == -1) break;
-      int32_t alt = pressureSensor.convertToAltitude(le.pressure);
+      if (le.getPressure() == -1) break;
+      int32_t alt = pressureSensor.convertToAltitude(le.getPressure());
       if (alt < lowestAltitude) lowestAltitude = alt;
     }
     else break;
@@ -353,17 +355,19 @@ void fakeAFlight()
   for (int i = 0; i < 10; i++)
   {
     LogEntry le;
-    le.pressure = bp - i*100 * 3;
-    le.temperature = 20.0;
-    le.battery = 5.99;
+    le.setPressure(bp - i*100 * 3);
+    le.setTemperature(20.0);
+    le.setBattery(5.99);
+    le.setServo(0);
     datastore.addEntry(&le);
   }
   for (uint32_t i = 0; i < 500; i++)
   {
     LogEntry le;
-    le.pressure = bp - (500-i)*2 * 3;
-    le.temperature = 20.0;
-    le.battery = 5.99;    
+    le.setPressure( bp - (500-i)*2 * 3 );
+    le.setTemperature(20.0);
+    le.setBattery(5.99); 
+    le.setServo(0);
     datastore.addEntry(&le);
   }
   printMessage(DONE_MESSAGE);
@@ -393,21 +397,21 @@ void selfTest()
   float vMin, vMax;
   datastore.startRead();
   datastore.getNextEntry(&le);
-  pMin = le.pressure;
-  pMax = le.pressure;
-  tMin = le.temperature;
-  tMax = le.temperature;
-  vMin = le.battery;
-  vMax = le.battery;
+  pMin = le.getPressure();
+  pMax = le.getPressure();
+  tMin = le.getTemperature();
+  tMax = le.getTemperature();
+  vMin = le.getBattery();
+  vMax = le.getBattery();
   while( datastore.entryAvailable() )
   {
     datastore.getNextEntry(&le);
-    if (le.pressure < pMin) pMin = le.pressure;
-    if (le.temperature < tMin) tMin = le.temperature;
-    if (le.battery < vMin) vMin = le.battery;
-    if (le.pressure > pMax) pMax = le.pressure;
-    if (le.temperature > tMax) tMax = le.temperature;
-    if (le.battery > vMax) vMax = le.battery;
+    if (le.getPressure() < pMin) pMin = le.getPressure();
+    if (le.getTemperature() < tMin) tMin = le.getTemperature();
+    if (le.getBattery() < vMin) vMin = le.getBattery();
+    if (le.getPressure() > pMax) pMax = le.getPressure();
+    if (le.getTemperature() > tMax) tMax = le.getTemperature();
+    if (le.getBattery() > vMax) vMax = le.getBattery();
   }
   int32_t deltaP = pMax - pMin;
   int32_t deltaT = tMax - tMin;

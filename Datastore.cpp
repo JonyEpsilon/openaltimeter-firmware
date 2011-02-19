@@ -172,9 +172,9 @@ void Datastore::testWrite(int n)
   LogEntry le;
   for (int i = 0; i < n; i++)
   {
-    le.pressure = i + 1;
-    le.temperature = 2 * i + 1;
-    le.battery = 0.1 * (double)(i + 1);
+    le.setPressure( i + 1 );
+    le.setTemperature( 2 * i + 1 );
+    le.setBattery( 0.1 * (double)(i + 1) );
 //    le.print();
     addEntry(&le);
   }
@@ -232,10 +232,52 @@ void Datastore::test()
 void LogEntry::print()
 {
   Serial.print("P: ");
-  Serial.print(pressure);
+  Serial.print(getPressure());
   Serial.print(" T: ");
-  Serial.print(temperature);
+  Serial.print(getTemperature());
   Serial.print(" B: ");  
-  Serial.println(battery);
+  Serial.print(getBattery());
+  Serial.print(" S: ");
+  Serial.println(getServo(), DEC);
+}
+
+void LogEntry::setPressure(int32_t pressure)
+{
+  pressureRaw = pressure;
+}
+
+int32_t LogEntry::getPressure()
+{
+  return pressureRaw;
+}
+
+void LogEntry::setTemperature(int32_t temperature)
+{
+  temperatureRaw = temperature;
+}
+
+int32_t LogEntry::getTemperature()
+{
+  return temperatureRaw;
+}
+
+void LogEntry::setBattery(float battery)
+{
+  batteryRaw = battery;
+}
+
+float LogEntry::getBattery()
+{
+  return batteryRaw;
+}
+
+void LogEntry::setServo(uint8_t servo)
+{
+  servoRaw = servo;
+}
+
+uint8_t LogEntry::getServo()
+{
+  return servoRaw;
 }
 

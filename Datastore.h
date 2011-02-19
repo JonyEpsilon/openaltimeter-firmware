@@ -33,10 +33,20 @@
 class LogEntry
 {
   public:
-    int32_t pressure;
-    int32_t temperature;
-    float battery;
     void print();
+    int32_t getPressure();
+    int32_t getTemperature();
+    float getBattery();
+    uint8_t getServo();
+    void setPressure(int32_t pressure);
+    void setTemperature(int32_t temperature);
+    void setBattery(float battery);
+    void setServo(uint8_t servo);
+  private:
+    int32_t pressureRaw;
+    int32_t temperatureRaw;
+    float batteryRaw;
+    uint8_t servoRaw;
 } __attribute__ ((__packed__)); // this is to force the compiler not to pad the data structure. It probably makes no difference on AVR-GCC.
 
 class Datastore
