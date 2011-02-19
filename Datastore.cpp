@@ -241,36 +241,50 @@ void LogEntry::print()
   Serial.println(getServo(), DEC);
 }
 
+// pressure is stored as a 16-bit signed integer. The mapping
+// is pressure = pressureRaw + 101325 . This gives a pressure
+// range of 68557 to 134093 hPa. This corresponds to an altitude
+// range of -2.4 to +3.2 km around sea-level. Should be enough for most
+// purposes!
 void LogEntry::setPressure(int32_t pressure)
 {
-  pressureRaw = pressure;
+  pressureRaw = (int16_t)(pressure - (int32_t)101325);
 }
 
 int32_t LogEntry::getPressure()
 {
-  return pressureRaw;
+  return (int32_t)pressureRaw + (int32_t)101325;
 }
 
+// temperature is stored in an 8-bit unsigned integer. The mapping
+// is (remembering that getTemperature() returns a value in tenths
+// of a degree Celcius - the format the BMP085 uses)
+// temperature = (rawValue * 2.5) - 150. This gives a range of
+// -150 to 487.5 (i.e. -15 to 48.75 C).
 void LogEntry::setTemperature(int32_t temperature)
 {
-  temperatureRaw = temperature;
+  temperatureRaw = (temperature + 150) * 0.4;
 }
 
 int32_t LogEntry::getTemperature()
 {
-  return temperatureRaw;
+  return (temperatureRaw * 2.5) - 150;
 }
 
+// we store the battery voltage in an 8-bit unsigned integer. The mapping is 
+// batteryVoltage = 2 + (rawValue * 0.05). This gives a range of 
+// 2V to 14.75V in 0.05V steps
 void LogEntry::setBattery(float battery)
 {
-  batteryRaw = battery;
+  batteryRaw = (battery - 2.0) * 20;
 }
 
 float LogEntry::getBattery()
 {
-  return batteryRaw;
+  return 2.0 + (0.05 * (float)batteryRaw);
 }
 
+// TODO: servo storage is not yet implemented
 void LogEntry::setServo(uint8_t servo)
 {
   servoRaw = servo;
