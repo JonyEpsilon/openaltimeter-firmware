@@ -73,6 +73,15 @@ uint8_t Radio::getState()
   return RADIO_SWITCH_MID;
 }
 
+// this gets the servo value as quickly as possible.
+// It doesn't make any attempt at noise immunity, so some spurious values
+// might be returned, especially if there is heavy interrupt use, like when
+// a tune is playing.
+uint16_t Radio::getServoValueQuick()
+{
+  return pulseIn(_inputPin, HIGH, RADIO_TIMEOUT);
+}
+
 void Radio::test()
 {
   Serial.println("Testing radio ...");

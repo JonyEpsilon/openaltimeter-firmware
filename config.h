@@ -28,6 +28,7 @@
 #define BATTERY_ANALOG_PIN 6
 #define AT25DF_SS_PIN 10
 #define RADIO_INPUT_PIN 8
+#define SERVO_INPUT_PIN 9
 
 // ** Configuration **
 // -- pressure logging
@@ -71,6 +72,8 @@
 // these define the servo pulse lengths that define the switch position. They are in us.
 #define RADIO_MID_THRESHOLD_LOW 1400
 #define RADIO_MID_THRESHOLD_HIGH 1600
+// if the following line is active (that is, not commented out with //), then the second servo channel will be logged with the data
+#define LOG_SERVO
 
 // -- tunes and alarms
 // startup tune

@@ -63,7 +63,7 @@ char _m27[] PROGMEM = "Flash memory full.\n";
 char _m28[] PROGMEM = "Test: FAILED.\n";
 // the data format message can be used by the downloader app to parse the downloaded
 // data correctly.
-char _m29[] PROGMEM = "Data format: V1";
+char _m29[] PROGMEM = "Data format: V1\n";
 
 // This table must include all the messages you want to use.
 // The defines in the header refer to the index in this table. You

@@ -34,7 +34,8 @@ class Radio
     void setup();
     uint16_t getRawValue();
     uint8_t getState();
-	void test();
+    uint16_t getServoValueQuick();
+    void test();
   private:
     int _inputPin;
 };

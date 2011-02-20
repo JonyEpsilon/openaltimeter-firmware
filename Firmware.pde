@@ -34,6 +34,7 @@ Battery battery(BATTERY_ANALOG_PIN);
 AT25DF flash(AT25DF_SS_PIN);
 Datastore datastore(&flash);
 Radio radio(RADIO_INPUT_PIN);
+Radio servo(SERVO_INPUT_PIN);
 
 // state variables
 boolean logging = true;
@@ -67,6 +68,7 @@ void setup()
   Spi.setup();
   pressureSensor.setup();
   radio.setup();
+  servo.setup();
   flash.setup();
   Beeper::setup(BEEPER_PIN);
   printMessage(DATASTORE_SETUP_MESSAGE);
@@ -171,11 +173,14 @@ void log()
   if (logging)
   {
     LogEntry le;
-    le.setPressure( pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE) );
-    le.setTemperature( pressureSensor.temperature );
-    le.setBattery( battery.readVoltage() );
-    //TODO: servo logging
+    le.setPressure(pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE));
+    le.setTemperature(pressureSensor.temperature);
+    le.setBattery(battery.readVoltage());
+#ifdef LOG_SERVO
+    le.setServo(servo.getServoValueQuick());
+#else
     le.setServo(0);
+#endif
     if (datastore.addEntry(&le))
       Serial.print(".");
     else

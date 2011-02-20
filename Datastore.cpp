@@ -284,14 +284,19 @@ float LogEntry::getBattery()
   return 2.0 + (0.05 * (float)batteryRaw);
 }
 
-// TODO: servo storage is not yet implemented
-void LogEntry::setServo(uint8_t servo)
+// servo values are stored in an 8-bit unsigned integer. The mapping is
+// servoValue = servoRaw * 8 + 500. This gives a range of
+// 500us to 2540us. Zero is treated as a special case, and zero raw is 
+// mapped to zero real;
+void LogEntry::setServo(uint16_t servo)
 {
-  servoRaw = servo;
+  if (servo == 0) servoRaw = 0;
+  else servoRaw = (servo - 500) / 8;
 }
 
-uint8_t LogEntry::getServo()
+uint16_t LogEntry::getServo()
 {
-  return servoRaw;
+  if (servoRaw == 0) return 0;
+  else return (servoRaw * 8) + 500;
 }
 

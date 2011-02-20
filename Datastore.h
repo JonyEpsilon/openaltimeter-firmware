@@ -37,11 +37,11 @@ class LogEntry
     int32_t getPressure();
     int32_t getTemperature();
     float getBattery();
-    uint8_t getServo();
+    uint16_t getServo();
     void setPressure(int32_t pressure);
     void setTemperature(int32_t temperature);
     void setBattery(float battery);
-    void setServo(uint8_t servo);
+    void setServo(uint16_t servo);
   private:
     int16_t pressureRaw;
     uint8_t temperatureRaw;
