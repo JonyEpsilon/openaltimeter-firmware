@@ -54,6 +54,7 @@ Settings settings;
 int16_t startupTune[] = STARTUP_TUNE;
 int16_t lowVoltageTune[] = LOW_VOLTAGE_TUNE;
 int16_t lostModelTune[] = LOST_MODEL_TUNE;
+int16_t settingsSaveTune[] = SETTINGS_SAVE_TUNE;
 
 void setup()
 {
@@ -70,6 +71,7 @@ void setup()
   Serial.print("Build: ");
   Serial.println(__TIMESTAMP__);
   printMessage(DATA_FORMAT_MESSAGE);
+  printMessage(SETTINGS_FORMAT_MESSAGE);
   SettingsStore::load(&settings);
   settings.print();
   Spi.setup();
@@ -373,20 +375,21 @@ void wipeSettings()
   stopLogging;
   printMessage(WIPE_SETTINGS_MESSAGE);
   SettingsStore::erase();
+  Beeper::playTune(settingsSaveTune);
+  Beeper::waitForTuneToEnd();
   printMessage(DONE_MESSAGE);
 }
 
 // this function reads a settings structure off the serial port and writes it to the settings store
 void programSettings()
 { 
-  Beeper::outputInteger(1);
   byte* settingsBytes = (byte*)&settings;
   stopLogging();
   while (Serial.available() < SETTINGS_SIZE) {}
   for (int i = 0; i < SETTINGS_SIZE; i++) settingsBytes[i] = (byte)Serial.read();
-  Beeper::outputInteger(2);
   SettingsStore::save(&settings);
-  Beeper::outputInteger(3);
+  Beeper::playTune(settingsSaveTune);
+  Beeper::waitForTuneToEnd();
 }
 
 // this function outputs the current settings to the serial port

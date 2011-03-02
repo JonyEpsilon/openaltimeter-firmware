@@ -56,6 +56,7 @@
 #define DATA_FORMAT_MESSAGE 29
 #define WIPE_SETTINGS_MESSAGE 30
 #define SETTINGS_TEST_MESSAGE 31
+#define SETTINGS_FORMAT_MESSAGE 32
 
 void printMessage(int messageIndex);
 
