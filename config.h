@@ -34,9 +34,9 @@
 // -- pressure logging
 #define ALTIMETER_SOFT_OVERSAMPLE 20
 #define ALTIMETER_BASE_PRESSURE_SAMPLES 200
-#define LOG_INTERVAL_MS 500
-// height units: 3.281 for feet, 1.0 for metres.
-#define HEIGHT_UNITS 3.281
+#define LOG_INTERVAL_MS_DEFAULT 500
+// Default height units, in case no valid settings are found: 3.281 for feet, 1.0 for metres. Defaults to feet.
+#define HEIGHT_UNITS_DEFAULT 3.281
 
 // -- launch detector
 // these parameters tune the launch detector - note that if you change HEIGHT UNITS or LOG_INTERVAL_MS you'll
@@ -51,29 +51,21 @@
 #define LAUNCH_SEEKBACK_SAMPLES 20
 
 // -- low voltage alarm
-// set the kind of battery - acceptable options are BATTERY_NONE, BATTERY_LIPO, BATTERY_NIMH
-#define BATTERY_NIMH
+// default LVA threshold if no valid settings are found.
+#define LOW_VOLTAGE_THRESHOLD_DEFAULT 4.7
 // when the battery alarm goes off, the voltage will need to come up to the threshold plus this voltage
 // before the alarm will switch off. This stops the alarm from switching on and off repeatedly when the
 // voltage is very close to threshold.
 #define BATTERY_MONITOR_HYSTERESIS 0.2
-// you can use this to adjust the battery monitor's overall scaling. I'd only recommend doing this
-// if you have a meter that you know is good. The default of 1.0 should be ok for most.
-#define BATTERY_MONITOR_CALIBRATION 1.0
 // --- lipo options
-// this is the voltage per cell that will trigger the low voltage alarm
-#define LIPO_LOW_VOLTAGE_PER_CELL_THRESHOLD 3.5
 // this is the voltage that will be used to distinguish between 2s and 3s packs.
 #define LIPO_CELL_DETECT_THRESHOLD 8.6
-// --- NiMH options
-#define NIHM_LOW_VOLTAGE_THRESHOLD 4.7
+//#define LIPO_LOW_VOLTAGE_PER_CELL_THRESHOLD 3.5
 
 // -- radio control
 // these define the servo pulse lengths that define the switch position. They are in us.
 #define RADIO_MID_THRESHOLD_LOW 1400
 #define RADIO_MID_THRESHOLD_HIGH 1600
-// if the following line is active (that is, not commented out with //), then the second servo channel will be logged with the data
-#define LOG_SERVO
 
 // -- tunes and alarms
 // startup tune

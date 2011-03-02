@@ -54,6 +54,8 @@
 #define FLASH_FULL_MESSAGE 27
 #define TEST_FAIL_MESSAGE 28
 #define DATA_FORMAT_MESSAGE 29
+#define WIPE_SETTINGS_MESSAGE 30
+#define SETTINGS_TEST_MESSAGE 31
 
 void printMessage(int messageIndex);
 

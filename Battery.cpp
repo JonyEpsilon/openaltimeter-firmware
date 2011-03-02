@@ -22,51 +22,56 @@
 #include "WProgram.h"
 
 #include "Messages.h"
+#include "Settings.h"
 #include <math.h>
 
 #define DIVIDER_RATIO 5.7 // the divider is a 1k resistor and a 4.7k resistor
 #define MCU_SUPPLY_VOLTAGE 3.3
 
-#define CONVERSION_FACTOR (DIVIDER_RATIO * MCU_SUPPLY_VOLTAGE * BATTERY_MONITOR_CALIBRATION) / 1024.0
+#define CONVERSION_FACTOR (DIVIDER_RATIO * MCU_SUPPLY_VOLTAGE) / 1024.0
 
 Battery::Battery(int analogInputPin)
 {
   _analogInputPin = analogInputPin;
 }
 
-void Battery::setup()
+void Battery::setup(BatteryType batteryType, float batteryMonitorCalibration, float threshold)
 {
   _isLow = false;
-#ifdef BATTERY_LIPO
-  // measure the LIPO voltage and work out the number of cells
-  float v = readVoltage();
-  _numberOfCells = ((v < LIPO_CELL_DETECT_THRESHOLD) ? 2 : 3);
-#endif
+  _batteryType = batteryType;
+  _calibration = batteryMonitorCalibration;
+  _threshold = threshold;
+  if (batteryType == BATTERY_TYPE_LIPO)
+  {
+    // measure the LIPO voltage and work out the number of cells
+    float v = readVoltage();
+    _numberOfCells = ((v < LIPO_CELL_DETECT_THRESHOLD) ? 2 : 3);
+  }
 }
 
 float Battery::readVoltage()
 {
-  return CONVERSION_FACTOR * analogRead(_analogInputPin);
+  return CONVERSION_FACTOR * _calibration * analogRead(_analogInputPin);
 }
 
 // There is a small amount of hysteresis in this function to stop the alarm from
 // intermittently switching on and off near the voltage threshold.
 boolean Battery::isLow()
 {
-#ifdef BATTERY_NONE
-   return false;
-#endif
+  if (_batteryType == BATTERY_TYPE_NONE) return false;
   // TODO: would be better to abstract the hysteresis calculation here
   boolean low;
   double v = readVoltage();
-#ifdef BATTERY_LIPO
-  if (_isLow) low = ((v / _numberOfCells) < (LIPO_LOW_VOLTAGE_PER_CELL_THRESHOLD + BATTERY_MONITOR_HYSTERESIS));
-  else low = ((v / _numberOfCells) < LIPO_LOW_VOLTAGE_PER_CELL_THRESHOLD);
-#endif
-#ifdef BATTERY_NIMH
-  if (_isLow) low = (v < (NIHM_LOW_VOLTAGE_THRESHOLD + BATTERY_MONITOR_HYSTERESIS));
-  else low = (v < NIHM_LOW_VOLTAGE_THRESHOLD);
-#endif
+  if (_batteryType == BATTERY_TYPE_LIPO)
+  {
+    if (_isLow) low = ((v / _numberOfCells) < (_threshold + BATTERY_MONITOR_HYSTERESIS));
+    else low = ((v / _numberOfCells) < _threshold);
+  }
+  if (_batteryType == BATTERY_TYPE_NIMH)
+  {
+    if (_isLow) low = (v < (_threshold + BATTERY_MONITOR_HYSTERESIS));
+    else low = (v < _threshold);
+  }
   _isLow = low;
   return low;
 }

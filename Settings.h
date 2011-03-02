@@ -17,30 +17,38 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef BATTERY_H
-#define BATTERY_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #include "WProgram.h"
 #include "config.h"
 
-#include "Settings.h"
+#define SETTINGS_SIZE sizeof(Settings)
 
-class Battery
+enum BatteryType { BATTERY_TYPE_NIMH = 0, BATTERY_TYPE_LIPO = 1, BATTERY_TYPE_NONE = 2 };
+
+class Settings
 {
   public:
-    Battery(int analogInputPin);
-    void setup(BatteryType batteryType, float batteryMonitorCalibration, float threshold);
-    float readVoltage();
-    boolean isLow();
-    int numberOfCells();
-    void test();
-  private:
-    int _analogInputPin;
-    int _numberOfCells;
-    boolean _isLow;
-    float _calibration;
-    BatteryType _batteryType;
-    float _threshold;
+    uint16_t logIntervalMS;
+    float heightUnits;
+    BatteryType batteryType;
+    // if the battery type is NIMH, then this is the threshold, for LIPO it's the per cell threshold
+    float lowVoltageThreshold;
+    float batteryMonitorCalibration;
+    bool logServo;
+    
+    void print();
 };
 
-#endif /*BATTERY_H*/
+class SettingsStore
+{
+  public:
+    static void save(Settings* settings);
+    static void load(Settings* settings);
+    static void erase();
+    static void test();
+};
+
+
+#endif /*SETTINGS_H*/

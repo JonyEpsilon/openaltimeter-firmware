@@ -25,8 +25,10 @@
 #include "Datastore.h"
 #include "Messages.h"
 #include "Radio.h"
+#include "Settings.h"
 #include "SPI.h"
 #include <Wire.h>
+#include <EEPROM.h>
 
 // hardware objects
 BMP085 pressureSensor(BMP085_XCLR_PIN, BMP085_EOC_PIN, BMP085_STANDARD);
@@ -41,6 +43,9 @@ boolean logging = true;
 boolean lowVoltageAlarm = false;
 boolean lostModelAlarm = false;
 uint32_t millisCounter;
+
+// the settings structure - this is loaded from non-volatile memory when the logger starts up
+Settings settings;
 
 // tunes - it's safest to declare the tunes as globals as they will be asynchronously
 // accessed by the tune-player interrupt service routine. If they are declared as
@@ -65,6 +70,8 @@ void setup()
   Serial.print("Build: ");
   Serial.println(__TIMESTAMP__);
   printMessage(DATA_FORMAT_MESSAGE);
+  SettingsStore::load(&settings);
+  settings.print();
   Spi.setup();
   pressureSensor.setup();
   radio.setup();
@@ -81,13 +88,14 @@ void setup()
   printMessage(DONE_MESSAGE);
   Beeper::playTune(startupTune);
   Beeper::waitForTuneToEnd();
-  battery.setup();
-#ifdef BATTERY_LIPO
-  printMessage(LIPO_CELLS_MESSAGE);
-  Serial.print(battery.numberOfCells());
-  Serial.println(".");
-  Beeper::outputInteger(battery.numberOfCells());
-#endif
+  battery.setup(settings.batteryType, settings.batteryMonitorCalibration, settings.lowVoltageThreshold);
+  if (settings.batteryType == BATTERY_TYPE_LIPO)
+  {
+    printMessage(LIPO_CELLS_MESSAGE);
+    Serial.print(battery.numberOfCells());
+    Serial.println(".");
+    Beeper::outputInteger(battery.numberOfCells());
+  }
   // take note of when we're starting the loop, which we'll use for our periodic logging
   millisCounter = millis();
 }
@@ -118,7 +126,7 @@ void loop()
     }
     if (millis() > millisCounter) 
     {
-      millisCounter += LOG_INTERVAL_MS;
+      millisCounter += settings.logIntervalMS;
       log();
     }
   }
@@ -151,6 +159,15 @@ void parseCommand(uint8_t comm)
     case 't':
       selfTest();
       break;
+    case 'w':
+      wipeSettings();
+      break;
+    case 's':
+      programSettings();
+      break;
+    case 'r':
+      readSettings();
+      break;
     // these are mainly useful for debugging
     case 'a':
       Beeper::playTune(lowVoltageTune);
@@ -176,11 +193,8 @@ void log()
     le.setPressure(pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE));
     le.setTemperature(pressureSensor.temperature);
     le.setBattery(battery.readVoltage());
-#ifdef LOG_SERVO
-    le.setServo(servo.getServoValueQuick());
-#else
-    le.setServo(0);
-#endif
+    if (settings.logServo) le.setServo(servo.getServoValueQuick());
+    else le.setServo(0);
     if (datastore.addEntry(&le))
       Serial.print(".");
     else
@@ -276,7 +290,7 @@ void outputMaxHeight()
   {
     LogEntry le;
     datastore.getPreviousEntry(&le);
-    int32_t alt = pressureSensor.convertToAltitude(le.getPressure());
+    int32_t alt = pressureSensor.convertToAltitude(le.getPressure(), settings.heightUnits);
     if (alt > highestAltitude) highestAltitude = alt;
     if (lastHeight - alt > LAUNCH_CLIMB_THRESHOLD) launchingFor++;
     else launchingFor = 0;
@@ -294,7 +308,7 @@ void outputMaxHeight()
       // we stop if we encounter a file boundary.
       // unlikely to happen, but worth checking for.
       if (le.getPressure() == -1) break;
-      int32_t alt = pressureSensor.convertToAltitude(le.getPressure());
+      int32_t alt = pressureSensor.convertToAltitude(le.getPressure(), settings.heightUnits);
       if (alt < lowestAltitude) lowestAltitude = alt;
     }
     else break;
@@ -353,6 +367,36 @@ void stopLostModelAlarm()
   }
 }
 
+// this function erases the settings memory
+void wipeSettings()
+{
+  stopLogging;
+  printMessage(WIPE_SETTINGS_MESSAGE);
+  SettingsStore::erase();
+  printMessage(DONE_MESSAGE);
+}
+
+// this function reads a settings structure off the serial port and writes it to the settings store
+void programSettings()
+{ 
+  Beeper::outputInteger(1);
+  byte* settingsBytes = (byte*)&settings;
+  stopLogging();
+  while (Serial.available() < SETTINGS_SIZE) {}
+  for (int i = 0; i < SETTINGS_SIZE; i++) settingsBytes[i] = (byte)Serial.read();
+  Beeper::outputInteger(2);
+  SettingsStore::save(&settings);
+  Beeper::outputInteger(3);
+}
+
+// this function outputs the current settings to the serial port
+void readSettings()
+{
+  stopLogging();
+  byte* settingsBytes = (byte*)&settings;
+  for (int i = 0; i < SETTINGS_SIZE; i++) Serial.write(settingsBytes[i]);
+}
+
 // this adds a fake flight to the logger's memory. Useful for testing.
 void fakeAFlight()
 {
@@ -390,6 +434,7 @@ void selfTest()
   battery.test();
   Beeper::test();
   radio.test();
+  SettingsStore::test();
   
   // we log a number of entries and then look at the range of the logged values
   // (this is easier than computing the s.d., and does the job pretty much as well.)

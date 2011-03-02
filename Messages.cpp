@@ -32,7 +32,7 @@
 // the welcome message prints the build version. This should correspond to the tag in the SVN repository.
 // The first word of this string must be openaltimeter, as it's what the desktop app uses to 
 // verify that it's connected.
-char _m0[] PROGMEM = "openaltimeter firmware version: beta6.\n";
+char _m0[] PROGMEM = "openaltimeter firmware version: V2.\n";
 char _m1[] PROGMEM = "Setting up datastore ...";
 char _m2[] PROGMEM = " done.\n";
 char _m3[] PROGMEM = "Erasing ... ";
@@ -64,6 +64,8 @@ char _m28[] PROGMEM = "Test: FAILED.\n";
 // the data format message can be used by the downloader app to parse the downloaded
 // data correctly.
 char _m29[] PROGMEM = "Data format: V1\n";
+char _m30[] PROGMEM = "Erasing settings ...";
+char _m31[] PROGMEM = "Testing settings store ...";
 
 // This table must include all the messages you want to use.
 // The defines in the header refer to the index in this table. You
@@ -71,7 +73,8 @@ char _m29[] PROGMEM = "Data format: V1\n";
 PGM_P _messages[] PROGMEM = 
 {
   _m0, _m1, _m2, _m3, _m4, _m5, _m6, _m7, _m8, _m9, _m10, _m11, _m12, _m13, _m14, _m15,
-  _m16, _m17, _m18, _m19, _m20, _m21, _m22, _m23, _m24, _m25, _m26, _m27, _m28, _m29
+  _m16, _m17, _m18, _m19, _m20, _m21, _m22, _m23, _m24, _m25, _m26, _m27, _m28, _m29, _m30,
+  _m31
 };
 
 char _messageBuffer[MESSAGE_BUFFER_LENGTH];
