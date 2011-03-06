@@ -39,13 +39,12 @@
 #define HEIGHT_UNITS_DEFAULT 3.281
 
 // -- launch detector
-// these parameters tune the launch detector - note that if you change HEIGHT UNITS or LOG_INTERVAL_MS you'll
-// need to change these.
-// this is the rate of climb that is considered a launch. It's measured in (height units)/(logging interval)
-#define LAUNCH_CLIMB_THRESHOLD 10
-// this is how many successive intervals have to exceed the launch climb rate to
-// trigger the launch detector
-#define LAUNCH_CLIMB_TIME 3
+// these parameters tune the launch detector
+// this is the rate of climb that is considered a launch. It's measured in m/s.
+#define LAUNCH_CLIMB_THRESHOLD 3.0
+// this is how long the climb intervals have to exceed the launch climb rate to
+// trigger the launch detector, measured in ms
+#define LAUNCH_CLIMB_TIME 1500
 // this is how many samples to seek back after the launch was detected to find the
 // minimum height
 #define LAUNCH_SEEKBACK_SAMPLES 20
@@ -60,7 +59,6 @@
 // --- lipo options
 // this is the voltage that will be used to distinguish between 2s and 3s packs.
 #define LIPO_CELL_DETECT_THRESHOLD 8.6
-//#define LIPO_LOW_VOLTAGE_PER_CELL_THRESHOLD 3.5
 
 // -- radio control
 // these define the servo pulse lengths that define the switch position. They are in us.

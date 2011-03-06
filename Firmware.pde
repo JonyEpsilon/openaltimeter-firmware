@@ -294,9 +294,9 @@ void outputMaxHeight()
     datastore.getPreviousEntry(&le);
     int32_t alt = pressureSensor.convertToAltitude(le.getPressure(), settings.heightUnits);
     if (alt > highestAltitude) highestAltitude = alt;
-    if (lastHeight - alt > LAUNCH_CLIMB_THRESHOLD) launchingFor++;
+    if (lastHeight - alt > (LAUNCH_CLIMB_THRESHOLD * settings.heightUnits * ((float)settings.logIntervalMS / 1000.0))) launchingFor++;
     else launchingFor = 0;
-    if (launchingFor >= LAUNCH_CLIMB_TIME) break;
+    if (launchingFor >= (LAUNCH_CLIMB_TIME / settings.logIntervalMS)) break;
     lastHeight = alt;
   }
   // we've detected a launch, so now we need to seek back and find the lowest point before the launch
