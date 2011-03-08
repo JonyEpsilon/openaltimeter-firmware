@@ -161,7 +161,7 @@ uint32_t BMP085::softOversamplePressure(int softOversample)
     calculate();
     avPres += pressure;
   }
-  return avPres /= softOversample;
+  return avPres / softOversample;
 }
 
 // sets the base pressure which is used to calculate alititude changes
