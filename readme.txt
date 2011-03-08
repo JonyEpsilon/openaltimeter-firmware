@@ -19,6 +19,8 @@ Jan Steidl
 Changelog
 =========
 
+V2: New settings system, so that firmware doesn't have to be reflashed to change a setting. Fix the launch height detector units bug.
+
 V1: New data format that more than doubles memory capacity. Servo logging.
 
 beta6: Fix a bug that crashed the board when the log memory was full (thanks to Jan Steidl for the patch). Improve radio pulse detection code so that it should work with all brands of radio (thanks to lebenj for extensive testing).
