@@ -39,7 +39,7 @@ void SettingsStore::load(Settings* settings)
   if (settings->logIntervalMS == 0) {
     settings->logIntervalMS = LOG_INTERVAL_MS_DEFAULT;
     settings->heightUnits = HEIGHT_UNITS_DEFAULT;
-    settings->batteryType = BATTERY_TYPE_NIMH;
+    settings->batteryType = BATTERY_TYPE_NONE;
     settings->lowVoltageThreshold = LOW_VOLTAGE_THRESHOLD_DEFAULT;
     settings->batteryMonitorCalibration = 1.0;
     settings->logServo = false;
