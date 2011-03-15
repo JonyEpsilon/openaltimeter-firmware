@@ -19,6 +19,8 @@ Jan Steidl
 Changelog
 =========
 
+V3: Change the default battery type to "none" as part of a fix for the beeping-during-firmware upgrade bug.
+
 V2: New settings system, so that firmware doesn't have to be reflashed to change a setting. Fix the launch height detector units bug.
 
 V1: New data format that more than doubles memory capacity. Servo logging.
