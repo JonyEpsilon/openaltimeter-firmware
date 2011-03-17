@@ -37,6 +37,7 @@ class Settings
     float lowVoltageThreshold;
     float batteryMonitorCalibration;
     bool logServo;
+    bool threePositionSwitch;
     
     void print();
 };

@@ -43,6 +43,7 @@ void SettingsStore::load(Settings* settings)
     settings->lowVoltageThreshold = LOW_VOLTAGE_THRESHOLD_DEFAULT;
     settings->batteryMonitorCalibration = 1.0;
     settings->logServo = false;
+    settings->threePositionSwitch = true;
   }
 }
 
@@ -90,5 +91,7 @@ void Settings::print()
   Serial.println(batteryMonitorCalibration);
   Serial.print("Log servo: ");
   Serial.println(logServo);
+  Serial.print("Three position switch: ");
+  Serial.println(threePositionSwitch);
 }
 

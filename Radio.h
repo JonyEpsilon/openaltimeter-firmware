@@ -26,6 +26,10 @@
 #define RADIO_SWITCH_OFF 0
 #define RADIO_SWITCH_MID 1
 #define RADIO_SWITCH_ON 2
+// this value is never returned by the radio code, so can be used to ensure that
+// a function can't be activated (used by the 2- and 3-position switch configuration
+// code in Firmware.pde)
+#define RADIO_SWITCH_IMPOSSIBLE 3
 
 class Radio
 {

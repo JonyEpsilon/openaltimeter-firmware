@@ -56,6 +56,13 @@ int16_t lowVoltageTune[] = LOW_VOLTAGE_TUNE;
 int16_t lostModelTune[] = LOST_MODEL_TUNE;
 int16_t settingsSaveTune[] = SETTINGS_SAVE_TUNE;
 
+// these are initialised when the settings are loaded and indicate which switch state will trigger the LMA
+// and the height readout respectively. This allows the software to be configured for two- and three-position
+// switches from the settings. These default values will result in neither the LMA or height readout being
+// active
+uint8_t lostModelSwitchState = RADIO_SWITCH_IMPOSSIBLE;
+uint8_t heightReadoutSwitchState = RADIO_SWITCH_IMPOSSIBLE;
+
 void setup()
 {
   // set up all the hardware
@@ -98,6 +105,16 @@ void setup()
     Serial.println(".");
     Beeper::outputInteger(battery.numberOfCells());
   }
+  // set up the radio switch states
+  if (settings.threePositionSwitch) {
+    // if we have a three position switch then lost model alarm is assigned to the fully on position
+    lostModelSwitchState = RADIO_SWITCH_ON;
+    // and height readout is assigned the middle position
+    heightReadoutSwitchState = RADIO_SWITCH_MID;
+  } else {
+    // whereas if we only have a two position switch then height readout is fully on, and lost model is not accessible
+    heightReadoutSwitchState = RADIO_SWITCH_ON;
+  }
   // take note of when we're starting the loop, which we'll use for our periodic logging
   millisCounter = millis();
 }
@@ -110,7 +127,7 @@ void loop()
 {
   // Lost model alarm takes precedence over everything, including the low voltage alarm.
   // This is to maximise the battery life when in lost model condition.
-  if (radio.getState() == RADIO_SWITCH_ON)
+  if (radio.getState() == lostModelSwitchState)
   {
     stopLowVoltageAlarm();
     soundLostModelAlarm();
@@ -124,7 +141,7 @@ void loop()
     // we only beep out the height if the low voltage alarm is not sounding
     if (!lowVoltageAlarm)
     {
-      if (radio.getState() == RADIO_SWITCH_MID) outputMaxHeight();
+      if (radio.getState() == heightReadoutSwitchState) outputMaxHeight();
     }
     if (millis() > millisCounter) 
     {
