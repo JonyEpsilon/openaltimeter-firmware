@@ -66,7 +66,17 @@ char _m28[] PROGMEM = "Test: FAILED.\n";
 char _m29[] PROGMEM = "Data format: V1\n";
 char _m30[] PROGMEM = "Erasing settings ...";
 char _m31[] PROGMEM = "Testing settings store ...";
-char _m32[] PROGMEM = "Settings format: V2\n";
+char _m32[] PROGMEM = "Settings format: V4\n";
+char _m33[] PROGMEM = "Log interval: ";
+char _m34[] PROGMEM = "Height units: ";
+char _m35[] PROGMEM = "Battery type: ";
+char _m36[] PROGMEM = "no battery\n";
+char _m37[] PROGMEM = "LIPO battery\n";
+char _m38[] PROGMEM = "NIMH battery\n";
+char _m39[] PROGMEM = "Low voltage threshold: ";
+char _m40[] PROGMEM = "Battery monitor calibration: ";
+char _m41[] PROGMEM = "Log servo: ";
+char _m42[] PROGMEM = "Three position switch: ";
 
 // This table must include all the messages you want to use.
 // The defines in the header refer to the index in this table. You
@@ -75,7 +85,7 @@ PGM_P _messages[] PROGMEM =
 {
   _m0, _m1, _m2, _m3, _m4, _m5, _m6, _m7, _m8, _m9, _m10, _m11, _m12, _m13, _m14, _m15,
   _m16, _m17, _m18, _m19, _m20, _m21, _m22, _m23, _m24, _m25, _m26, _m27, _m28, _m29, _m30,
-  _m31, _m32
+  _m31, _m32, _m33, _m34, _m35, _m36, _m37, _m38, _m39, _m40, _m41, _m42
 };
 
 char _messageBuffer[MESSAGE_BUFFER_LENGTH];

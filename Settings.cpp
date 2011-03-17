@@ -68,30 +68,29 @@ void SettingsStore::test()
 
 void Settings::print()
 {
-  Serial.print("Log interval: ");
+  printMessage(SETTINGS_LOG_INTERVAL_MESSAGE);
   Serial.println(logIntervalMS);
-  Serial.print("Height units: ");
+  printMessage(SETTINGS_HEIGHT_UNITS_MESSAGE);
   Serial.println(heightUnits);
-  Serial.print("Battery type: ");
+  printMessage(SETTINGS_BATTERY_TYPE_MESSAGE);
   switch (batteryType)
   {
     case BATTERY_TYPE_NONE:
-      Serial.println("no battery");
+      printMessage(SETTINGS_NO_BATTERY_MESSAGE);
       break;
     case BATTERY_TYPE_LIPO:
-      Serial.println("LIPO battery");
+      printMessage(SETTINGS_LIPO_BATTERY_MESSAGE);
       break;
     case BATTERY_TYPE_NIMH:
-      Serial.println("NIMH battery");
+      printMessage(SETTINGS_NIMH_BATTERY_MESSAGE);
       break;
   }
-  Serial.print("Low voltage threshold: ");
+  printMessage(SETTINGS_LOW_VOLTAGE_THRESHOLD_MESSAGE);
   Serial.println(lowVoltageThreshold);
-  Serial.print("Battery monitor calibration: ");
+  printMessage(SETTINGS_BATTERY_MONITOR_CALIBRATION_MESSAGE);
   Serial.println(batteryMonitorCalibration);
-  Serial.print("Log servo: ");
+  printMessage(SETTINGS_LOG_SERVO_MESSAGE);
   Serial.println(logServo);
-  Serial.print("Three position switch: ");
+  printMessage(SETTINGS_THREE_POSITION_SWITCH_MESSAGE);
   Serial.println(threePositionSwitch);
 }
-
