@@ -19,6 +19,8 @@ Jan Steidl
 Changelog
 =========
 
+V4: Add setting to configure the OA for use with a two-position switch.
+
 V3: Change the default battery type to "none" as part of a fix for the beeping-during-firmware upgrade bug.
 
 V2: New settings system, so that firmware doesn't have to be reflashed to change a setting. Fix the launch height detector units bug.
