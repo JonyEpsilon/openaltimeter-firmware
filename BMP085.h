@@ -43,7 +43,7 @@ class BMP085
     void calculate();
     void updateRawTemperature();
     void updateRawPressure();
-    uint32_t softOversamplePressure(int softOversample);
+    void softOversample(int ost, int osp);
     void setBasePressure();
     uint32_t getBasePressure();
     int32_t convertToAltitude(uint32_t pressure, float heightUnits);

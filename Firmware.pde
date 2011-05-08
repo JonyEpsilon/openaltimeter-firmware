@@ -209,7 +209,8 @@ void log()
   if (logging)
   {
     LogEntry le;
-    le.setPressure(pressureSensor.softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE));
+    pressureSensor.softOversample(ALTIMETER_OST, ALTIMETER_OSP);
+    le.setPressure(pressureSensor.pressure);
     le.setTemperature(pressureSensor.temperature);
     le.setBattery(battery.readVoltage());
     if (settings.logServo) le.setServo(servo.getServoValueQuick());
@@ -422,7 +423,7 @@ void fakeAFlight()
 {
   printMessage(FAKING_FLIGHT_MESSAGE);
   uint32_t bp = pressureSensor.getBasePressure();
-  for (int i = 0; i < 10; i++)
+  for (uint32_t i = 0; i < 10; i++)
   {
     LogEntry le;
     le.setPressure(bp - i*100 * 3);

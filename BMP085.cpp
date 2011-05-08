@@ -151,23 +151,31 @@ void BMP085::updateRawPressure()
   _up = read24bit(0xf6) >> (8 - _oversampling);
 }
 
-uint32_t BMP085::softOversamplePressure(int softOversample)
+void BMP085::softOversample(int ost, int osp)
 {
-  updateRawTemperature();
-  uint32_t avPres = 0;
-  for (int i = 0 ; i < softOversample ; i++)
+  uint32_t avUT = 0;
+  for (int i = 0 ; i < ost ; i++)
+  {
+    updateRawTemperature();
+    avUT += _ut;
+  }
+  _ut = avUT / ost;
+  
+  uint32_t avUP = 0;
+  for (int i = 0 ; i < osp ; i++)
   {
     updateRawPressure();
-    calculate();
-    avPres += pressure;
+    avUP += _up;
   }
-  return avPres / softOversample;
+  _up = avUP / osp;
+  calculate();
 }
 
 // sets the base pressure which is used to calculate alititude changes
 void BMP085::setBasePressure()
 {
-  _basePressure = softOversamplePressure(ALTIMETER_BASE_PRESSURE_SAMPLES);
+  softOversample(ALTIMETER_OST, ALTIMETER_OSP);
+  _basePressure = pressure;
 }
 
 uint32_t BMP085::getBasePressure()
@@ -225,15 +233,14 @@ void BMP085::test()
 {
   Serial.println("Testing pressure sensor ...");
   Serial.print("P: ");
-  int32_t p = softOversamplePressure(ALTIMETER_SOFT_OVERSAMPLE);
-  Serial.print(p);
+  softOversample(ALTIMETER_OST, ALTIMETER_OSP);
+  Serial.print(pressure);
   Serial.print(" T: ");
-  int32_t t = temperature;
-  Serial.println(t);
+  Serial.println(temperature);
   Serial.println("Done.");
   
   // to pass the test the temperature should be between 15 and 30 degrees C, and the pressure between 99000 and 103000 hPa
-  if (t < 300 && t > 150 && p < 105000 && p > 99000) printMessage(TEST_PASS_MESSAGE);
+  if (temperature < 300 && temperature > 150 && pressure < 105000 && pressure > 99000) printMessage(TEST_PASS_MESSAGE);
   else printMessage(TEST_FAIL_MESSAGE);
 }
 

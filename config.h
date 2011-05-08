@@ -32,8 +32,9 @@
 
 // ** Configuration **
 // -- pressure logging
-#define ALTIMETER_SOFT_OVERSAMPLE 20
-#define ALTIMETER_BASE_PRESSURE_SAMPLES 200
+// these parameters define the amount of software oversampling applied to temperature and pressure respectively
+#define ALTIMETER_OST 20
+#define ALTIMETER_OSP 10
 #define LOG_INTERVAL_MS_DEFAULT 500
 // Default height units, in case no valid settings are found: 3.281 for feet, 1.0 for metres. Defaults to feet.
 #define HEIGHT_UNITS_DEFAULT 3.281
