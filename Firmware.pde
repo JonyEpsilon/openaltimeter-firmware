@@ -68,7 +68,7 @@ void setup()
   // set up all the hardware
   analogReference(EXTERNAL);
   Wire.begin();
-  Serial.begin(115200);
+  Serial.begin(SERIAL_BAUD_RATE);
   // enable the pull-up resistor on the serial input, to stop noise being read as characters
   digitalWrite(0, HIGH);
   // This prints out the time that this file was last modified every time the altimeter starts up.

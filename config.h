@@ -78,5 +78,8 @@
 #define BEEPER_INTEGER_REST_DURATION 5
 #define BEEPER_INTEGER_PAUSE_DURATION 15
 
+// -- serial connection
+#define SERIAL_BAUD_RATE 57600
+
 // -- test settings
 #define NUMBER_OF_TEST_LOGS 200

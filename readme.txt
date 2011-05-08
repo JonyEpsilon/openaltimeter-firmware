@@ -19,6 +19,8 @@ Jan Steidl
 Changelog
 =========
 
+V5: Better pressure measurement algorithm for lower noise. Improved boot-up time. Reduced serial baud rate for more robust communication with older computers.
+
 V4: Add setting to configure the OA for use with a two-position switch.
 
 V3: Change the default battery type to "none" as part of a fix for the beeping-during-firmware upgrade bug.
