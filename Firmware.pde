@@ -475,12 +475,12 @@ void uploadLogEntry()
     }
   }
   sBuffer[bufPtr++] = 0;
-  int pressure;
+  int32_t pressure;
   int temperature;
   int battery;
   int servo;
   int servo2;
-  int numRead = sscanf(sBuffer, "P: %d T: %d B: %d S: %d", &pressure, &temperature, &battery, &servo);
+  int numRead = sscanf(sBuffer, "P: %ld T: %d B: %d S: %d", &pressure, &temperature, &battery, &servo);
   if (numRead != 4) return;
   if (pressure == -1)
   {
