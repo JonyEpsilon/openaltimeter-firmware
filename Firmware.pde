@@ -200,6 +200,9 @@ void parseCommand(uint8_t comm)
     case 'o':
       outputMaxHeight();
       break;
+    case 'u':
+      uploadLogEntry();
+      break;
   }
 }
 
@@ -215,13 +218,18 @@ void log()
     le.setBattery(battery.readVoltage());
     if (settings.logServo) le.setServo(servo.getServoValueQuick());
     else le.setServo(0);
-    if (datastore.addEntry(&le))
-      Serial.print(".");
-    else
-    {
-      printMessage(FLASH_FULL_MESSAGE);
-      stopLogging();
-    }
+    addLogEntry(&le);
+  }
+}
+// this part of the function is broken out to support data upload/flight simulation.
+void addLogEntry(LogEntry* le)
+{
+  if (datastore.addEntry(le))
+  Serial.print(".");
+  else
+  {
+    printMessage(FLASH_FULL_MESSAGE);
+    stopLogging();
   }
 }
 
@@ -442,6 +450,53 @@ void fakeAFlight()
     datastore.addEntry(&le);
   }
   printMessage(DONE_MESSAGE);
+}
+
+// the following two functions allow uploading data to the OA which is useful for debugging things
+// like height detectors etc without having to take a trip to the field. The data is send as a string
+// like "P: 101529 T: 2725 B: 755 S: 0*". To make the parsing easier the battery voltage and the temperature
+// should be multiplied by 100 and passed as integers. Note that the string must end with an asterisk.
+// If the pressure value is -1 the entry will be interpreted as a file end marker.
+//
+// The OA will process the data as if it was a new log entry coming in live (i.e. height detector will be
+// updated etc).
+void uploadLogEntry()
+{ 
+  char sBuffer[80];
+  int bufPtr = 0;
+  int nextChar;
+  
+  stopLogging();
+  while (nextChar != '*')
+  {
+    nextChar = Serial.read();
+    if (nextChar != -1) {
+      sBuffer[bufPtr++] = nextChar;
+    }
+  }
+  sBuffer[bufPtr++] = 0;
+  int pressure;
+  int temperature;
+  int battery;
+  int servo;
+  int servo2;
+  int numRead = sscanf(sBuffer, "P: %d T: %d B: %d S: %d", &pressure, &temperature, &battery, &servo);
+  if (numRead != 4) return;
+  if (pressure == -1)
+  {
+    datastore.addFileEndMarker();
+    return;
+  }
+  else
+  {
+    LogEntry le;
+    le.setPressure(pressure);
+    le.setTemperature(temperature / 10);
+    le.setBattery((float)battery / 100);
+    le.setServo(servo);
+    
+    addLogEntry(&le);
+  }
 }
 
 void selfTest()
