@@ -224,6 +224,9 @@ void log()
 // this part of the function is broken out to support data upload/flight simulation.
 void addLogEntry(LogEntry* le)
 {
+  // update the height related quantities
+  updateHeightMonitor();
+  // store the entry
   if (datastore.addEntry(le))
   Serial.print(".");
   else
@@ -232,6 +235,82 @@ void addLogEntry(LogEntry* le)
     stopLogging();
   }
 }
+}
+
+// these functions track various height-related quantities. They implement the launch detectors, max height detector etc.
+int32_t currentHeight = 0;
+int32_t maxHeight = 0;                    // The overall maximum height of the flight.
+void updateHeightMonitor()
+{
+  currentHeight = pressureSensor.convertToAltitude(pressureSensor.pressure, settings.heightUnits);
+  if (currentHeight > maxHeight) maxHeight = currentHeight;
+  updateDLGHeightMonitor();
+}
+
+// DLG specific height functions and variables. This is broken out from the main height monitor to make the firmware
+// easier to customise.
+uint8_t launchCount = 0;                  // A launch is defined as N successive periods with more than a certain climb rate.
+                                          // This keeps track of how long we've been climbing.
+uint8_t launchWindowCount = 0;            // Used to track launch height separate from max height.
+uint32_t lastHeight = 0;                  // Used for measuring climb rates.
+boolean launched = false;                 // This indicates whether we're in flight or not. Launch detector is disabled in flight.
+int32_t maxLaunchHeight = 0;
+int32_t launchWindowEndHeight = 0;       // It's useful to know what height was attained a few seconds after launch to optimise push over.
+void updateDLGHeightMonitor()
+{
+  // We monitor the height data looking for a "launch". This is a number of samples that climb consistently at greater than a given rate.
+  if (!launched)
+  {
+    if (currentHeight - lastHeight > LAUNCH_CLIMB_THRESHOLD * settings.heightUnits) launchCount++;
+    else launchCount = 0;
+    lastHeight = currentHeight;
+    if (launchCount > (LAUNCH_CLIMB_TIME / settings.logIntervalMS))
+    {
+      // we've just detected a launch - disable the launch detector
+      launched = true;
+      launchCount = 0;
+      // When we detect a launch we do a few things: we reset the base pressure to the highest pressure in the few seconds before the launch;
+      // we start a countdown which defines the "launch window"; we reset the maximum heights.
+      // -- reset base pressure
+      uint32_t newBasePressure = 0;
+      datastore.startReverseRead();
+      for (int i = LAUNCH_SEEKBACK_SAMPLES; i > 0; i--)
+      {
+        if (datastore.entryReverseAvailable())
+        {
+          LogEntry le;
+          datastore.getPreviousEntry(&le);
+          // we stop if we encounter a file boundary.
+          // unlikely to happen, but worth checking for.
+          if (le.getPressure() == -1) break;
+          if (le.getPressure() > newBasePressure) newBasePressure = le.getPressure();
+        }      
+      }
+      // -- time the launch window
+      launchWindowCount = (LAUNCH_WINDOW_TIME / settings.logIntervalMS) + 1;
+      // -- reset max heights
+      maxHeight = 0;
+      maxLaunchHeight = 0;
+      launchWindowEndHeight = 0;
+    }
+  }
+  else
+  {
+    // The launch detector is disabled after a launch, so that it can't retrigger in flight. It is reset by either the logger's altitude coming
+    // below a certain threshold, or a height output function being commanded by the user (on the basis that this should always happen on the
+    // ground - the latter is implemented to stop the logger getting stuck should the ground-level pressure change dramatically during a flight.)
+    // Here we check for the former.
+    if (currentHeight < LAUNCH_DETECTOR_REARM_HEIGHT * settings.heightUnits) launched = false;
+  }
+  // if we're in the launch window we need to track the maximum altitude.
+  if (launchWindowCount > 0)
+  {
+    if (currentHeight > maxLaunchHeight) maxLaunchHeight = currentHeight;
+    // if this is the end of the launch window then we record the height
+    if (launchWindowCount = 1) launchWindowEndHeight = currentHeight;
+    launchWindowCount--;
+  }
+  
 
 void checkBatteryVoltage()
 {
@@ -452,7 +531,7 @@ void fakeAFlight()
   printMessage(DONE_MESSAGE);
 }
 
-// the following two functions allow uploading data to the OA which is useful for debugging things
+// the following function allows uploading data to the OA which is useful for debugging things
 // like height detectors etc without having to take a trip to the field. The data is send as a string
 // like "P: 101529 T: 2725 B: 755 S: 0*". To make the parsing easier the battery voltage and the temperature
 // should be multiplied by 100 and passed as integers. Note that the string must end with an asterisk.

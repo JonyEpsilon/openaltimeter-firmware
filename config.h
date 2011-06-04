@@ -49,6 +49,10 @@
 // this is how many samples to seek back after the launch was detected to find the
 // minimum height
 #define LAUNCH_SEEKBACK_SAMPLES 20
+// this is how long the launch window is, in ms. The launch height will be measured in this window.
+#define LAUNCH_WINDOW_TIME 3000
+// the height at which the launch detector re-arms. Measured in meters.
+#define LAUNCH_DETECTOR_REARM_HEIGHT 8
 
 // -- low voltage alarm
 // default LVA threshold if no valid settings are found.
