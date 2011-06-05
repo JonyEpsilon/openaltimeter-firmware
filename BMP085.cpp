@@ -178,6 +178,11 @@ void BMP085::setBasePressure()
   _basePressure = pressure;
 }
 
+void BMP085::setBasePressure(int32_t pressure)
+{
+  _basePressure = pressure;
+}
+
 uint32_t BMP085::getBasePressure()
 {
   return _basePressure;

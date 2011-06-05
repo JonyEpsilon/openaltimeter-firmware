@@ -42,6 +42,7 @@ class LogEntry
     void setTemperature(int32_t temperature);
     void setBattery(float battery);
     void setServo(uint16_t servo);
+    boolean isFileEndMarker();
   private:
     int16_t pressureRaw;
     uint8_t temperatureRaw;

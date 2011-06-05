@@ -225,7 +225,7 @@ void log()
 void addLogEntry(LogEntry* le)
 {
   // update the height related quantities
-  updateHeightMonitor();
+  updateHeightMonitor(le);
   // store the entry
   if (datastore.addEntry(le))
   Serial.print(".");
@@ -235,14 +235,13 @@ void addLogEntry(LogEntry* le)
     stopLogging();
   }
 }
-}
 
 // these functions track various height-related quantities. They implement the launch detectors, max height detector etc.
 int32_t currentHeight = 0;
 int32_t maxHeight = 0;                    // The overall maximum height of the flight.
-void updateHeightMonitor()
+void updateHeightMonitor(LogEntry* le)
 {
-  currentHeight = pressureSensor.convertToAltitude(pressureSensor.pressure, settings.heightUnits);
+  currentHeight = pressureSensor.convertToAltitude(le->getPressure(), settings.heightUnits);
   if (currentHeight > maxHeight) maxHeight = currentHeight;
   updateDLGHeightMonitor();
 }
@@ -252,7 +251,7 @@ void updateHeightMonitor()
 uint8_t launchCount = 0;                  // A launch is defined as N successive periods with more than a certain climb rate.
                                           // This keeps track of how long we've been climbing.
 uint8_t launchWindowCount = 0;            // Used to track launch height separate from max height.
-uint32_t lastHeight = 0;                  // Used for measuring climb rates.
+int32_t lastHeight = 0;                  // Used for measuring climb rates.
 boolean launched = false;                 // This indicates whether we're in flight or not. Launch detector is disabled in flight.
 int32_t maxLaunchHeight = 0;
 int32_t launchWindowEndHeight = 0;       // It's useful to know what height was attained a few seconds after launch to optimise push over.
@@ -264,7 +263,7 @@ void updateDLGHeightMonitor()
     if (currentHeight - lastHeight > LAUNCH_CLIMB_THRESHOLD * settings.heightUnits) launchCount++;
     else launchCount = 0;
     lastHeight = currentHeight;
-    if (launchCount > (LAUNCH_CLIMB_TIME / settings.logIntervalMS))
+    if (launchCount >= (LAUNCH_CLIMB_TIME / settings.logIntervalMS))
     {
       // we've just detected a launch - disable the launch detector
       launched = true;
@@ -282,10 +281,11 @@ void updateDLGHeightMonitor()
           datastore.getPreviousEntry(&le);
           // we stop if we encounter a file boundary.
           // unlikely to happen, but worth checking for.
-          if (le.getPressure() == -1) break;
+          if (le.isFileEndMarker()) break;
           if (le.getPressure() > newBasePressure) newBasePressure = le.getPressure();
         }      
       }
+      pressureSensor.setBasePressure(newBasePressure);
       // -- time the launch window
       launchWindowCount = (LAUNCH_WINDOW_TIME / settings.logIntervalMS) + 1;
       // -- reset max heights
@@ -307,9 +307,10 @@ void updateDLGHeightMonitor()
   {
     if (currentHeight > maxLaunchHeight) maxLaunchHeight = currentHeight;
     // if this is the end of the launch window then we record the height
-    if (launchWindowCount = 1) launchWindowEndHeight = currentHeight;
+    if (launchWindowCount == 1) launchWindowEndHeight = currentHeight;
     launchWindowCount--;
   }
+}
   
 
 void checkBatteryVoltage()
@@ -383,48 +384,30 @@ void printData()
   }
 }
 
-void outputMaxHeight()
+void outputHeight(int32_t h)
 {
   stopLogging();
-  // working backwards from now we step through the data, keeping track of the highest point,
-  // until we detect a launch
-  int32_t highestAltitude = 0;
-  int32_t lastHeight = 0;
-  int16_t launchingFor = 0;
-  int32_t lowestAltitude;
-  datastore.startReverseRead();
-  while (datastore.entryReverseAvailable())
-  {
-    LogEntry le;
-    datastore.getPreviousEntry(&le);
-    int32_t alt = pressureSensor.convertToAltitude(le.getPressure(), settings.heightUnits);
-    if (alt > highestAltitude) highestAltitude = alt;
-    if (lastHeight - alt > (LAUNCH_CLIMB_THRESHOLD * settings.heightUnits * ((float)settings.logIntervalMS / 1000.0))) launchingFor++;
-    else launchingFor = 0;
-    if (launchingFor >= (LAUNCH_CLIMB_TIME / settings.logIntervalMS)) break;
-    lastHeight = alt;
-  }
-  // we've detected a launch, so now we need to seek back and find the lowest point before the launch
-  lowestAltitude = highestAltitude;
-  for (int i = LAUNCH_SEEKBACK_SAMPLES; i > 0; i--)
-  {
-    if (datastore.entryReverseAvailable())
-    {
-      LogEntry le;
-      datastore.getPreviousEntry(&le);
-      // we stop if we encounter a file boundary.
-      // unlikely to happen, but worth checking for.
-      if (le.getPressure() == -1) break;
-      int32_t alt = pressureSensor.convertToAltitude(le.getPressure(), settings.heightUnits);
-      if (alt < lowestAltitude) lowestAltitude = alt;
-    }
-    else break;
-  }
-  Serial.print("Flight height: ");
-  Serial.println(highestAltitude - lowestAltitude);
-  Beeper::outputInteger(highestAltitude - lowestAltitude);
+  //-- reset the launch detector
+  launched = false;
+  Serial.println(h);
+  Beeper::outputInteger(h);
   delay(500);
   startLogging();
+}
+
+void outputMaxHeight()
+{
+  outputHeight(maxHeight);
+}
+
+void outputMaxLaunchHeight()
+{
+  outputHeight(maxLaunchHeight);
+}
+
+void outputLaunchWindowEndHeight()
+{
+  outputHeight(launchWindowEndHeight);
 }
 
 void soundLowVoltageAlarm()

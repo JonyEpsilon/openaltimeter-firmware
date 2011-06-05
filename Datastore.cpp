@@ -300,3 +300,8 @@ uint16_t LogEntry::getServo()
   else return (servoRaw * 8) + 500;
 }
 
+boolean LogEntry::isFileEndMarker()
+{
+  return (pressureRaw == -1 && temperatureRaw == 255);
+}
+
