@@ -43,7 +43,8 @@ void SettingsStore::load(Settings* settings)
     settings->lowVoltageThreshold = LOW_VOLTAGE_THRESHOLD_DEFAULT;
     settings->batteryMonitorCalibration = 1.0;
     settings->logServo = false;
-    settings->threePositionSwitch = true;
+    settings->midPositionAction = OUTPUT_MAX_LAUNCH_HEIGHT;
+    settings->onPositionAction = OUTPUT_MAX_HEIGHT;
   }
 }
 
@@ -91,6 +92,39 @@ void Settings::print()
   Serial.println(batteryMonitorCalibration);
   printMessage(SETTINGS_LOG_SERVO_MESSAGE);
   Serial.println(logServo);
-  printMessage(SETTINGS_THREE_POSITION_SWITCH_MESSAGE);
-  Serial.println(threePositionSwitch);
+  printMessage(SETTINGS_MID_POSITION_MESSAGE);
+  switch (midPositionAction)
+  {
+    case OUTPUT_MAX_HEIGHT:
+      printMessage(SETTINGS_MAX_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_MAX_LAUNCH_HEIGHT:
+      printMessage(SETTINGS_MAX_LAUNCH_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_LAUNCH_WINDOW_END_HEIGHT:
+      printMessage(SETTINGS_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_BATTERY_VOLTAGE:
+      printMessage(SETTINGS_BATTERY_VOLTAGE_MESSAGE);
+      break;
+  }
+  printMessage(SETTINGS_ON_POSITION_MESSAGE);
+  switch (onPositionAction)
+  {
+    case DO_NOTHING:
+      printMessage(SETTINGS_DO_NOTHING_MESSAGE);
+      break;    
+    case OUTPUT_MAX_HEIGHT:
+      printMessage(SETTINGS_MAX_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_MAX_LAUNCH_HEIGHT:
+      printMessage(SETTINGS_MAX_LAUNCH_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_LAUNCH_WINDOW_END_HEIGHT:
+      printMessage(SETTINGS_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
+      break;
+    case OUTPUT_BATTERY_VOLTAGE:
+      printMessage(SETTINGS_BATTERY_VOLTAGE_MESSAGE);
+      break;
+  }
 }

@@ -26,6 +26,7 @@
 #define SETTINGS_SIZE sizeof(Settings)
 
 enum BatteryType { BATTERY_TYPE_NIMH = 0, BATTERY_TYPE_LIPO = 1, BATTERY_TYPE_NONE = 2 };
+enum Action { DO_NOTHING = 0, OUTPUT_MAX_HEIGHT = 1, OUTPUT_MAX_LAUNCH_HEIGHT = 2, OUTPUT_LAUNCH_WINDOW_END_HEIGHT = 3, OUTPUT_BATTERY_VOLTAGE = 4 };
 
 class Settings
 {
@@ -37,7 +38,8 @@ class Settings
     float lowVoltageThreshold;
     float batteryMonitorCalibration;
     bool logServo;
-    bool threePositionSwitch;
+    Action midPositionAction;
+    Action onPositionAction;
     
     void print();
 };

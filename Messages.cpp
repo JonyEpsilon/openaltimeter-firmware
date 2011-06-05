@@ -32,7 +32,7 @@
 // the welcome message prints the build version. This should correspond to the tag in the SVN repository.
 // The first word of this string must be openaltimeter, as it's what the desktop app uses to 
 // verify that it's connected.
-char _m0[] PROGMEM = "openaltimeter firmware version: V5.\n";
+char _m0[] PROGMEM = "openaltimeter firmware version: V6.\n";
 char _m1[] PROGMEM = "Setting up datastore ...";
 char _m2[] PROGMEM = " done.\n";
 char _m3[] PROGMEM = "Erasing ... ";
@@ -66,7 +66,7 @@ char _m28[] PROGMEM = "Test: FAILED.\n";
 char _m29[] PROGMEM = "Data format: V1\n";
 char _m30[] PROGMEM = "Erasing settings ...";
 char _m31[] PROGMEM = "Testing settings store ...";
-char _m32[] PROGMEM = "Settings format: V4\n";
+char _m32[] PROGMEM = "Settings format: V6\n";
 char _m33[] PROGMEM = "Log interval: ";
 char _m34[] PROGMEM = "Height units: ";
 char _m35[] PROGMEM = "Battery type: ";
@@ -76,7 +76,13 @@ char _m38[] PROGMEM = "NIMH battery\n";
 char _m39[] PROGMEM = "Low voltage threshold: ";
 char _m40[] PROGMEM = "Battery monitor calibration: ";
 char _m41[] PROGMEM = "Log servo: ";
-char _m42[] PROGMEM = "Three position switch: ";
+char _m42[] PROGMEM = "Switch mid position action: ";
+char _m43[] PROGMEM = "Switch on position action: ";
+char _m44[] PROGMEM = "Output max height.\n";
+char _m45[] PROGMEM = "Output launch height.\n";
+char _m46[] PROGMEM = "Output launch + 3s height.\n";
+char _m47[] PROGMEM = "Output battery voltage.\n";
+char _m48[] PROGMEM = "Do nothing.\n";
 
 // This table must include all the messages you want to use.
 // The defines in the header refer to the index in this table. You
@@ -85,7 +91,8 @@ PGM_P _messages[] PROGMEM =
 {
   _m0, _m1, _m2, _m3, _m4, _m5, _m6, _m7, _m8, _m9, _m10, _m11, _m12, _m13, _m14, _m15,
   _m16, _m17, _m18, _m19, _m20, _m21, _m22, _m23, _m24, _m25, _m26, _m27, _m28, _m29, _m30,
-  _m31, _m32, _m33, _m34, _m35, _m36, _m37, _m38, _m39, _m40, _m41, _m42
+  _m31, _m32, _m33, _m34, _m35, _m36, _m37, _m38, _m39, _m40, _m41, _m42, _m43, _m44, _m45,
+  _m46, _m47, _m48
 };
 
 char _messageBuffer[MESSAGE_BUFFER_LENGTH];

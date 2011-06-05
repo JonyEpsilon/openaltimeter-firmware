@@ -56,13 +56,6 @@ int16_t lowVoltageTune[] = LOW_VOLTAGE_TUNE;
 int16_t lostModelTune[] = LOST_MODEL_TUNE;
 int16_t settingsSaveTune[] = SETTINGS_SAVE_TUNE;
 
-// these are initialised when the settings are loaded and indicate which switch state will trigger the LMA
-// and the height readout respectively. This allows the software to be configured for two- and three-position
-// switches from the settings. These default values will result in neither the LMA or height readout being
-// active
-uint8_t lostModelSwitchState = RADIO_SWITCH_IMPOSSIBLE;
-uint8_t heightReadoutSwitchState = RADIO_SWITCH_IMPOSSIBLE;
-
 void setup()
 {
   // set up all the hardware
@@ -105,53 +98,58 @@ void setup()
     Serial.println(".");
     Beeper::outputInteger(battery.numberOfCells());
   }
-  // set up the radio switch states
-  if (settings.threePositionSwitch) {
-    // if we have a three position switch then lost model alarm is assigned to the fully on position
-    lostModelSwitchState = RADIO_SWITCH_ON;
-    // and height readout is assigned the middle position
-    heightReadoutSwitchState = RADIO_SWITCH_MID;
-  } else {
-    // whereas if we only have a two position switch then height readout is fully on, and lost model is not accessible
-    heightReadoutSwitchState = RADIO_SWITCH_ON;
-  }
   // take note of when we're starting the loop, which we'll use for our periodic logging
   millisCounter = millis();
 }
 
 // we run around this loop as fast as we can, each time doing several things:
-// - check if there's a serial command which would change our state
+// - check for commands from the radio input
 // - check whether there's a hardware condition which would change our state
 // - check whether it's time to write another entry to the log.
+// - check if there's a serial command which would change our state
 void loop()
 {
-  // Lost model alarm takes precedence over everything, including the low voltage alarm.
-  // This is to maximise the battery life when in lost model condition.
-  if (radio.getState() == lostModelSwitchState)
+  // -- handle radio commands
+  // we only handle the radio commands if the low battery alarm is not sounding.
+  if (!lowVoltageAlarm)
   {
-    stopLowVoltageAlarm();
-    soundLostModelAlarm();
-    // slow down the loop, so we're not hammering radio.getState().
-    delay(500);
+    uint8_t radioState = radio.getState();
+    if (radioState == RADIO_SWITCH_MID) handleRadioCommand(settings.midPositionAction);
+    if (radioState == RADIO_SWITCH_ON) handleRadioCommand(settings.onPositionAction);
   }
-  else
+  // -- update the log if needed
+  if (millis() > millisCounter) 
   {
-    stopLostModelAlarm();
-    checkBatteryVoltage();
-    // we only beep out the height if the low voltage alarm is not sounding
-    if (!lowVoltageAlarm)
-    {
-      if (radio.getState() == heightReadoutSwitchState) outputMaxHeight();
-    }
-    if (millis() > millisCounter) 
-    {
-      millisCounter += settings.logIntervalMS;
-      log();
-    }
+    millisCounter += settings.logIntervalMS;
+    log();
   }
-  // check for serial commands
+  // -- check for hardware conditions
+  checkBatteryVoltage();
+  // -- check for serial commands
   if (Serial.available() > 0) parseCommand(Serial.read());
 }
+
+void handleRadioCommand(Action act)
+{
+  switch (act)
+  {
+    case DO_NOTHING:
+      break;
+    case OUTPUT_MAX_HEIGHT:
+      outputMaxHeight();
+      break;
+    case OUTPUT_MAX_LAUNCH_HEIGHT:
+      outputMaxLaunchHeight();
+      break;
+    case OUTPUT_LAUNCH_WINDOW_END_HEIGHT:
+      outputLaunchWindowEndHeight();
+      break;
+    case OUTPUT_BATTERY_VOLTAGE:
+      Serial.println("Battery voltage!");
+      break;
+  }
+}
+
 
 void parseCommand(uint8_t comm)
 {
