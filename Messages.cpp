@@ -80,9 +80,14 @@ char _m42[] PROGMEM = "Switch mid position action: ";
 char _m43[] PROGMEM = "Switch on position action: ";
 char _m44[] PROGMEM = "Output max height.\n";
 char _m45[] PROGMEM = "Output launch height.\n";
-char _m46[] PROGMEM = "Output launch + 3s height.\n";
+char _m46[] PROGMEM = "Output launch + 5s height.\n";
 char _m47[] PROGMEM = "Output battery voltage.\n";
 char _m48[] PROGMEM = "Do nothing.\n";
+char _m49[] PROGMEM = "Max height: ";
+char _m50[] PROGMEM = "Launch height: ";
+char _m51[] PROGMEM = "Glide height: ";
+char _m52[] PROGMEM = "Battery voltage: ";
+
 
 // This table must include all the messages you want to use.
 // The defines in the header refer to the index in this table. You
@@ -92,7 +97,7 @@ PGM_P _messages[] PROGMEM =
   _m0, _m1, _m2, _m3, _m4, _m5, _m6, _m7, _m8, _m9, _m10, _m11, _m12, _m13, _m14, _m15,
   _m16, _m17, _m18, _m19, _m20, _m21, _m22, _m23, _m24, _m25, _m26, _m27, _m28, _m29, _m30,
   _m31, _m32, _m33, _m34, _m35, _m36, _m37, _m38, _m39, _m40, _m41, _m42, _m43, _m44, _m45,
-  _m46, _m47, _m48
+  _m46, _m47, _m48, _m49, _m50, _m51, _m52
 };
 
 char _messageBuffer[MESSAGE_BUFFER_LENGTH];

@@ -145,7 +145,7 @@ void handleRadioCommand(Action act)
       outputLaunchWindowEndHeight();
       break;
     case OUTPUT_BATTERY_VOLTAGE:
-      Serial.println("Battery voltage!");
+      outputBatteryVoltage();
       break;
   }
 }
@@ -382,12 +382,12 @@ void printData()
   }
 }
 
-void outputHeight(int32_t h)
+void outputValue(int32_t h, char message)
 {
   stopLogging();
   //-- reset the launch detector
   launched = false;
-  Serial.println(h);
+  printMessage(message);
   Beeper::outputInteger(h);
   delay(500);
   startLogging();
@@ -395,17 +395,23 @@ void outputHeight(int32_t h)
 
 void outputMaxHeight()
 {
-  outputHeight(maxHeight);
+  outputValue(maxHeight, OUTPUT_MAX_HEIGHT_MESSAGE);
 }
 
 void outputMaxLaunchHeight()
 {
-  outputHeight(maxLaunchHeight);
+  outputValue(maxLaunchHeight, OUTPUT_MAX_LAUNCH_HEIGHT_MESSAGE);
 }
 
 void outputLaunchWindowEndHeight()
 {
-  outputHeight(launchWindowEndHeight);
+  outputValue(launchWindowEndHeight, OUTPUT_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
+}
+
+void outputBatteryVoltage()
+{
+  int32_t bVoltage = (int32_t)(100 * battery.readVoltage());
+  outputValue(bVoltage, OUTPUT_BATTERY_VOLTAGE_MESSAGE);
 }
 
 void soundLowVoltageAlarm()
