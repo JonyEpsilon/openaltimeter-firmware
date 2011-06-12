@@ -156,7 +156,10 @@ void parseCommand(uint8_t comm)
   switch (comm)
   {
     case 'e':
-      erase();
+    // the command for erase is ee and the commands need to come within 10ms of each other
+    // this should make it very unlikely that noise/glitches will trigger an erase
+      delay(10);
+      if (Serial.read() == 'e') erase();
       break;
     case 'c':
       stopLogging();
@@ -177,10 +180,14 @@ void parseCommand(uint8_t comm)
       selfTest();
       break;
     case 'w':
-      wipeSettings();
+    // as above, guard against accidental erasure
+      delay(10);
+      if (Serial.read() == 'w') wipeSettings();
       break;
     case 's':
-      programSettings();
+    // as above, guard against accidental erasure
+      delay(10);
+      if (Serial.read() == 's') programSettings();
       break;
     case 'r':
       readSettings();
