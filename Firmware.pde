@@ -203,7 +203,7 @@ void parseCommand(uint8_t comm)
       fakeAFlight();
       break;
     case 'o':
-      outputMaxHeight();
+      outputHeights();
       break;
     case 'u':
       uploadLogEntry();
@@ -413,6 +413,15 @@ void outputMaxLaunchHeight()
 void outputLaunchWindowEndHeight()
 {
   outputValue(launchWindowEndHeight, OUTPUT_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
+}
+
+void outputHeights()
+{
+  outputMaxLaunchHeight();
+  delay(500);
+  outputLaunchWindowEndHeight();
+  delay(500);
+  outputMaxHeight();
 }
 
 void outputBatteryVoltage()
