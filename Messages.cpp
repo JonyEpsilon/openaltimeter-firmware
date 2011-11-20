@@ -32,7 +32,7 @@
 // the welcome message prints the build version. This should correspond to the tag in the SVN repository.
 // The first word of this string must be openaltimeter, as it's what the desktop app uses to 
 // verify that it's connected.
-char _m0[] PROGMEM = "openaltimeter firmware version: V6.\n";
+char _m0[] PROGMEM = "openaltimeter firmware version: V7.\n";
 char _m1[] PROGMEM = "Setting up datastore ...";
 char _m2[] PROGMEM = " done.\n";
 char _m3[] PROGMEM = "Erasing ... ";

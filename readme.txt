@@ -19,6 +19,8 @@ Jan Steidl
 Changelog
 =========
 
+V7: Fix obscure bug in height detector that affects launches between 1.5 and 2s in duration.
+
 V6: All new height detector that is loop resistant! The new height detector tracks launch height, height a few seconds after launch and max height. Battery voltage can be output on switch command. New switch configuration which allows both positions to be freely assigned any of the possible functions. Longer commands for erase operations to reduce change of in flight corruption. Some extra functions for debugging (look at the Hg commit comments for details).
 
 V5: Better pressure measurement algorithm for lower noise. Improved boot-up time. Reduced serial baud rate for more robust communication with older computers.
