@@ -273,7 +273,6 @@ void updateDLGHeightMonitor()
       // we've just detected a launch - disable the launch detector
       launched = true;
       launchCount = 0;
-      tone(BEEPER_PIN, 4000, 10);
       // When we detect a launch we do a few things: we reset the base pressure to the highest pressure in the few seconds before the launch;
       // we start a countdown which defines the "launch window"; we reset the maximum heights.
       // -- reset base pressure
