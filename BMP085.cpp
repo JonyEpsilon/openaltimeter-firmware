@@ -188,9 +188,9 @@ uint32_t BMP085::getBasePressure()
   return _basePressure;
 }
 
-// this function assumes that basePressure is at sea level. This could be fixed if its important to anyone (like
+// this function assumes that basePressure is at sea level. This could be fixed if it's important to anyone (like
 // those who live up mountains!)
-int32_t BMP085::convertToAltitude(uint32_t pressure, float heightUnits)
+float BMP085::convertToAltitude(uint32_t pressure, float heightUnits)
 {
   return heightUnits * 44330.0 * (1.0 - pow((double)pressure / (double)_basePressure, 1.0 / 5.25));
 }

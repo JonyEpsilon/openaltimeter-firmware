@@ -47,7 +47,7 @@ class BMP085
     void setBasePressure();
     void setBasePressure(int32_t pressure);
     uint32_t getBasePressure();
-    int32_t convertToAltitude(uint32_t pressure, float heightUnits);
+    float convertToAltitude(uint32_t pressure, float heightUnits);
     void test();
   private:
     // configuration

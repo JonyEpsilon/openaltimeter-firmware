@@ -242,8 +242,8 @@ void addLogEntry(LogEntry* le)
 }
 
 // these functions track various height-related quantities. They implement the launch detectors, max height detector etc.
-int32_t currentHeight = 0;
-int32_t maxHeight = 0;                    // The overall maximum height of the flight.
+float currentHeight = 0;
+float maxHeight = 0;                    // The overall maximum height of the flight.
 void updateHeightMonitor(LogEntry* le)
 {
   currentHeight = pressureSensor.convertToAltitude(le->getPressure(), settings.heightUnits);
@@ -256,16 +256,23 @@ void updateHeightMonitor(LogEntry* le)
 uint8_t launchCount = 0;                  // A launch is defined as N successive periods with more than a certain climb rate.
                                           // This keeps track of how long we've been climbing.
 uint8_t launchWindowCount = 0;            // Used to track launch height separate from max height.
-int32_t lastHeight = 0;                  // Used for measuring climb rates.
+float lastHeight = 0;                  // Used for measuring climb rates.
 boolean launched = false;                 // This indicates whether we're in flight or not. Launch detector is disabled in flight.
-int32_t maxLaunchHeight = 0;
-int32_t launchWindowEndHeight = 0;       // It's useful to know what height was attained a few seconds after launch to optimise push over.
+float maxLaunchHeight = 0;
+float launchWindowEndHeight = 0;       // It's useful to know what height was attained a few seconds after launch to optimise push over.
 void updateDLGHeightMonitor()
 {
   // We monitor the height data looking for a "launch". This is a number of samples that climb consistently at greater than a given rate.
   if (!launched)
   {
-    if (currentHeight - lastHeight > LAUNCH_CLIMB_THRESHOLD * settings.heightUnits) launchCount++;
+    if (currentHeight - lastHeight > LAUNCH_CLIMB_THRESHOLD * settings.heightUnits) {
+      launchCount++;
+      // these lines can be very helpful when debugging the launch detector!
+//      Serial.print("Delt: ");Serial.print(LAUNCH_CLIMB_THRESHOLD * settings.heightUnits);Serial.print("\n");
+//      Serial.print("Curr: ");Serial.print(currentHeight);Serial.print("\n");
+//      Serial.print("Last: ");Serial.print(lastHeight);Serial.print("\n");
+//      Serial.print("Launch count: ");Serial.print(launchCount, DEC);Serial.print("\n");
+    }
     else launchCount = 0;
     lastHeight = currentHeight;
     if (launchCount >= (LAUNCH_CLIMB_TIME / settings.logIntervalMS))
@@ -402,17 +409,17 @@ void outputValue(int32_t h, char message)
 
 void outputMaxHeight()
 {
-  outputValue(maxHeight, OUTPUT_MAX_HEIGHT_MESSAGE);
+  outputValue((int32_t)maxHeight, OUTPUT_MAX_HEIGHT_MESSAGE);
 }
 
 void outputMaxLaunchHeight()
 {
-  outputValue(maxLaunchHeight, OUTPUT_MAX_LAUNCH_HEIGHT_MESSAGE);
+  outputValue((int32_t)maxLaunchHeight, OUTPUT_MAX_LAUNCH_HEIGHT_MESSAGE);
 }
 
 void outputLaunchWindowEndHeight()
 {
-  outputValue(launchWindowEndHeight, OUTPUT_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
+  outputValue((int32_t)launchWindowEndHeight, OUTPUT_LAUNCH_WINDOW_END_HEIGHT_MESSAGE);
 }
 
 void outputHeights()

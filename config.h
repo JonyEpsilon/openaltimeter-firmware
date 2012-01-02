@@ -52,7 +52,7 @@
 // this is how long the launch window is, in ms. The launch height will be measured in this window.
 #define LAUNCH_WINDOW_TIME 5000
 // the height at which the launch detector re-arms. Measured in meters.
-#define LAUNCH_DETECTOR_REARM_HEIGHT 8
+#define LAUNCH_DETECTOR_REARM_HEIGHT 8.0
 
 // -- low voltage alarm
 // default LVA threshold if no valid settings are found.
